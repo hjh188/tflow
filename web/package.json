@@ -1,0 +1,19 @@
+{
+  "name": "josh_html",
+  "version": "1.0.0",
+  "description": "josh_html\r =========\r |S.NO  |Color Names   | Color Code  \r |------|--------------|:-------------------:|\r | 1    | Primary      |  #418BCA            | \r | 2    | Success      |  #01BC8C            | \r | 3    | Info         |  #67C5DF            | \r | 4    | Warning      |  #F89A14            | \r | 5    | Danger       |  #EF6F6C            |\r | 6    | Default      |  #A9B6BC            |",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@bitbucket.org/lorvent/josh_html.git"
+  },
+  "author": "jyostna",
+  "license": "ISC",
+  "homepage": "https://bitbucket.org/lorvent/josh_html#readme",
+  "devDependencies": {
+    "gulp": "^3.9.0"
+  }
+}
