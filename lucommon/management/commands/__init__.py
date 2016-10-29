@@ -154,6 +154,8 @@ class LuBaseCommand(BaseCommand):
 
         for name, obj in inspect.getmembers(models):
             if inspect.isclass(obj) and issubclass(obj, Model):
+                if name in ('AbstractUser',):
+                    continue
                 model_names.append(name)
                 model_objs[name] = obj._meta.local_fields
 

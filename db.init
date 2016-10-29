@@ -1,0 +1,24 @@
+# create user
+CREATE USER 'tflow'@'localhost' IDENTIFIED BY 'tflow';
+
+# create db
+CREATE DATABASE tflow;
+
+# grant user privilege to db
+GRANT ALL PRIVILEGES ON tflow.* TO tflow@localhost IDENTIFIED BY 'tflow';
+
+""
+Django use the special table 'django_migrations' to track the file migrated
+
+1. create the migration:
+>> python manage.py makemigrations
+
+2. do the change to database
+>> python manage.py migrate
+""
+# init tuser app
+python manage.py makemigrations --name=tuser
+python manage.py migrate
+
+# init django admin super user
+python manage.py createsuperuser

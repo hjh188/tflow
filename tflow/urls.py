@@ -17,5 +17,8 @@ from django.conf.urls import include, url
 from django.contrib import admin
 
 urlpatterns = [
-    url(r'^admin/', include(admin.site.urls)),
+    url(r'^tflow/admin/', include(admin.site.urls)),
 ]
+
+urlpatterns.append(url(r'^tflow/docs/', include('rest_framework_swagger.urls')))
+urlpatterns.append(url(r'^tflow/tuser/', include('tuser.urls')))
