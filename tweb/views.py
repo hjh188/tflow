@@ -21,6 +21,11 @@ from lucommon import (
 from lucommon.response import LuResponse
 from lucommon.logger import lu_logger
 
+from django.shortcuts import render
+
+from django.contrib.auth import authenticate, login, logout
+from django.http import HttpResponseRedirect
+
 """
 Write less, do more
 
@@ -114,5 +119,40 @@ class WebSourceViewSet(viewsets.LuModelViewSet):
         HTTP DELETE item entry
         """
         return super(WebSourceViewSet, self).destroy(request, *args, **kwargs)
+
+    def get_login(self, request, *args, **kwargs):
+        """
+        Login page
+        """
+        logout(request)
+
+        return render(request, 'login.html', {'static_file_endpoint': self.conf.static_file_endpoint,
+                                              'next': request.query_params.get('next')})
+
+    def post_login(self, request, *args, **kwargs):
+        """
+        Login Form
+        """
+        logout(request)
+
+        username = request.data.get('username', '')
+        password = request.data.get('password', '')
+
+        user = authenticate(username=username, password=password)
+
+        if user is not None:
+            if user.is_active:
+                login(request, user)
+                next_page = request.query_params.get('next') if request.query_params.get('next') else 'index'
+                return HttpResponseRedirect(next_page)
+
+        return render(request, 'login.html', {'static_file_endpoint': self.conf.static_file_endpoint,
+                                              'next': request.query_params.get('next')})
+
+    def index(self, request, *args, **kwargs):
+        """
+        Index page
+        """
+        return render(request, 'index.html', {'static_file_endpoint': self.conf.static_file_endpoint})
 
 

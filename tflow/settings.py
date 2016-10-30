@@ -57,7 +57,7 @@ ROOT_URLCONF = 'tflow.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, "tweb", "web")],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -118,7 +118,7 @@ AUTH_USER_MODEL = 'tuser.User'
 from lucommon import *
 
 # LOGIN config
-LOGIN_URL = 'http://127.0.0.1:8080/web/login.html'
+LOGIN_URL = 'http://127.0.0.1:8080/tflow/tweb/login'
 
 # APP log switch
 APP_DEBUG = False

@@ -17,4 +17,6 @@ class WebSourceConf(LuConf):
     # In a real world, you mostly need to change db here
     db = 'default'
 
+    # Static File Prefix
+    static_file_endpoint = 'http://127.0.0.1:8080/web/'
 

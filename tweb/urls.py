@@ -21,6 +21,8 @@ urlpatterns = [
                                                       'put': 'update',
                                                       'patch': 'partial_update',
                                                       'delete': 'destroy'})),
+    url(r'^login', WebSourceViewSet.as_view({'get':'get_login', 'post':'post_login'})),
+    url(r'^index', WebSourceViewSet.as_view({'get':'index'})),
 
 ]
 
