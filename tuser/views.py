@@ -62,6 +62,11 @@ class UserViewSet(viewsets.LuModelViewSet):
     # Conf class
     conf = UserConf
 
+    # APP name
+    app = "tuser"
+
+    # Model name
+    model = "User"
 
     def perform_create(self, serializer):
         """

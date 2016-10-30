@@ -153,6 +153,9 @@ class LuModelViewSet(viewsets.ModelViewSet,
         """
         HTTP GET list entry
         """
+        if self.conf.enable_perm_list_check:
+            return LuResponse(status=403, code=4003, message='Not Allow For `list` action!')
+
         # Common process: response field, check if need to do in database level
         response_field = request.query_params.get(settings.RESPONSE_FIELD,'')
         queryset = self.queryset
@@ -368,12 +371,19 @@ class LuModelViewSet(viewsets.ModelViewSet,
         """
         HTTP GET item entry
         """
+        if self.conf.enable_perm_get_check:
+            return LuResponse(status=403, code=4003, message='Not Allow For `get` action!')
+
         return super(LuModelViewSet, self).retrieve(request, *args, **kwargs)
 
     def create(self, request, *args, **kwargs):
         """
         HTTP POST item entry
         """
+        if self.conf.enable_perm_create_check:
+            if not request.user.has_perm('%s.add_%s' % (self.app, self.model.lower())):
+                return LuResponse(status=403, code=4003, message="Not Allow For `create` action!")
+
         # Check if do SQL injection first
         sql = request.data.get(settings.SQL_TEXT, '')
 
@@ -414,6 +424,10 @@ class LuModelViewSet(viewsets.ModelViewSet,
         """
         HTTP PUT item entry
         """
+        if self.conf.enable_perm_update_check:
+            if not request.user.has_perm('%s.change_%s' % (self.app, self.model.lower())):
+                return LuResponse(status=403, code=4003, message="Not Allow For `update` action!")
+
         if self.conf.enable_join_multiple_key_value_pair:
             data = self.get_body_data(request)
 
@@ -441,6 +455,10 @@ class LuModelViewSet(viewsets.ModelViewSet,
         """
         HTTP PATCH item entry
         """
+        if self.conf.enable_perm_update_check:
+            if not request.user.has_perm('%s.change_%s' % (self.app, self.model.lower())):
+                return LuResponse(status=403, code=4003, message="Not Allow For `update` action!")
+
         if not self.conf.enable_reversion_partial_update:
             return super(LuModelViewSet, self).partial_update(request, *args, **kwargs)
         else:
@@ -457,6 +475,10 @@ class LuModelViewSet(viewsets.ModelViewSet,
         """
         HTTP DELETE item entry
         """
+        if self.conf.enable_perm_delete_check:
+            if not request.user.has_perm('%s.delete_%s' % (self.app, self.model.lower())):
+                return LuResponse(status=403, code=4003, message="Not Allow For `delete` action!")
+
         if not self.conf.enable_reversion_delete:
             return super(LuModelViewSet, self).destroy(request, *args, **kwargs)
         else:

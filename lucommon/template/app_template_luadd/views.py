@@ -33,6 +33,12 @@ class {{ model_name }}ViewSet(viewsets.LuModelViewSet):
     # Conf class
     conf = {{ model_name }}Conf
 
+    # APP name
+    app = "{{ app_name }}"
+
+    # Model name
+    model = "{{ model_name }}"
+
     def perform_create(self, serializer):
         """
         Keep this function for POST db select

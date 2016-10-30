@@ -42,6 +42,16 @@ class LuConf(object):
     enable_join_multiple_key_value_pair = True
     join_multiple_key_value_pair_delimiter = ','
 
+    # Permission based on model level
+    # for get and list, set the switch for it, it can be changed on the view conf
+    # for update, create and delete, let the permission based on django permission,
+    # so just need to set the conf if need to do the permission check or not
+    enable_perm_get_check = False
+    enable_perm_list_check = False
+    enable_perm_update_check = False
+    enable_perm_delete_check = True
+    enable_perm_create_check = False
+
 
 class DummyLuConf(object):pass
 
