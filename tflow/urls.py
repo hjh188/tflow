@@ -23,4 +23,6 @@ urlpatterns = [
 urlpatterns.append(url(r'^tflow/docs/', include('rest_framework_swagger.urls')))
 urlpatterns.append(url(r'^tflow/', include('rest_framework.urls', namespace='rest_framework')))
 urlpatterns.append(url(r'^tflow/tuser/', include('tuser.urls')))
+urlpatterns.append(url(r'^tflow/tweb/', include('tweb.urls')))
+
 

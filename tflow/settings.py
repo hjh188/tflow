@@ -38,6 +38,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'tuser',
+    'tweb',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -104,9 +105,12 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 
+# STATIC_URL define the web entry
+# STATICFIELS_DIRS map the real web files to the web entry
+# below means access `web` will fetch the files from tweb/web dir
 STATIC_URL = '/web/'
 STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, "web"),
+    os.path.join(BASE_DIR, "tweb", "web"),
 )
 
 AUTH_USER_MODEL = 'tuser.User'
