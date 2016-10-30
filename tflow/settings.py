@@ -92,7 +92,7 @@ DATABASES = {
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Shanghai'
 
 USE_I18N = True
 
@@ -112,5 +112,20 @@ STATICFILES_DIRS = (
 AUTH_USER_MODEL = 'tuser.User'
 
 from lucommon import *
+
+# LOGIN config
+LOGIN_URL = 'http://127.0.0.1:8080/web/login.html'
+
+# APP log switch
+APP_DEBUG = False
+
+# Use redis for session cache
+CACHES = {
+    'default': {
+        'BACKEND': 'redis_cache.RedisCache',
+        'LOCATION': '127.0.0.1:6379',
+    }
+}
+SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 
 
