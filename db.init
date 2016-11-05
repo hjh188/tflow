@@ -22,3 +22,7 @@ python manage.py migrate
 
 # init django admin super user
 python manage.py createsuperuser
+
+# Fix for the error:
+# Database returned an invalid value in QuerySet.datetimes(). Are time zone definitions for your datab
+mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql -u root -p mysql
