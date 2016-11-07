@@ -26,3 +26,8 @@ python manage.py createsuperuser
 # Fix for the error:
 # Database returned an invalid value in QuerySet.datetimes(). Are time zone definitions for your datab
 mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql -u root -p mysql
+
+# alter on tuser_user
+ALTER TABLE tuser_user ADD COLUMN sidebar_menu_top JSON;
+ALTER TABLE tuser_user ADD COLUMN sidebar_menu_bottom JSON;
+

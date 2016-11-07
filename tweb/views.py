@@ -126,8 +126,7 @@ class WebSourceViewSet(viewsets.LuModelViewSet):
         """
         logout(request)
 
-        return render(request, 'login.html', {'static_file_endpoint': self.conf.static_file_endpoint,
-                                              'next': request.query_params.get('next')})
+        return render(request, 'login.html', dict({'next': request.query_params.get('next')}, **self.conf.base_resp_context))
 
     def post_login(self, request, *args, **kwargs):
         """
@@ -146,13 +145,12 @@ class WebSourceViewSet(viewsets.LuModelViewSet):
                 next_page = request.query_params.get('next') if request.query_params.get('next') else 'index'
                 return HttpResponseRedirect(next_page)
 
-        return render(request, 'login.html', {'static_file_endpoint': self.conf.static_file_endpoint,
-                                              'next': request.query_params.get('next')})
+        return render(request, 'login.html', dict({'next': request.query_params.get('next')}, **self.conf.base_resp_context))
 
     def index(self, request, *args, **kwargs):
         """
         Index page
         """
-        return render(request, 'index.html', {'static_file_endpoint': self.conf.static_file_endpoint})
+        return render(request, 'index.html', self.conf.base_resp_context)
 
 
