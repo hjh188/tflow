@@ -26,6 +26,11 @@ from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponseRedirect
 
+from lucommon.sql import LuSQL
+from tuser.confs import UserConf
+
+import json
+
 """
 Write less, do more
 
@@ -49,6 +54,24 @@ def retrieve(self, request, *args, **kwargs):
 Use the YAML Docstring for API docs
 
 """
+
+def load_menu(view, request):
+    # Load user self menu setting if has or load the default
+    menu = LuSQL(UserConf.db, 'get_menu', [request.user.username], UserConf.sql_injection_allow, UserConf.sql_injection_map).execute()
+
+    user_sidebar_menu_top_tag = json.loads(menu[0]['sidebar_menu_top']) if menu[0]['sidebar_menu_top'] else view.conf.default_sidebar_menu_top
+    user_sidebar_menu_top = []
+
+    for item in user_sidebar_menu_top_tag:
+        user_sidebar_menu_top.append(view.conf.sidebar_menu_top_map[item])
+
+    user_sidebar_menu_bottom_tag = json.loads(menu[0]['sidebar_menu_bottom']) if menu[0]['sidebar_menu_bottom'] else view.conf.default_sidebar_menu_bottom
+    user_sidebar_menu_bottom = []
+
+    for item in user_sidebar_menu_bottom_tag:
+        user_sidebar_menu_bottom.append(view.conf.sidebar_menu_bottom_map[item])
+
+    return (user_sidebar_menu_top, user_sidebar_menu_bottom)
 
 
 class WebSourceViewSet(viewsets.LuModelViewSet):
@@ -151,6 +174,11 @@ class WebSourceViewSet(viewsets.LuModelViewSet):
         """
         Index page
         """
+        menu = load_menu(self, request)
+
+        self.conf.base_resp_context['sidebar_menu_top'] = menu[0]
+        self.conf.base_resp_context['sidebar_menu_bottom'] = menu[1]
+
         return render(request, 'index.html', self.conf.base_resp_context)
 
 

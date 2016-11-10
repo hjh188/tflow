@@ -88,3 +88,15 @@ class LuResponseFormatMiddleware(ResponseFormatMiddlewareBase):
         return response
 
 
+class LuUserCookie(object):
+    """
+    Set username to cookie
+    """
+    def process_response(self, request, response):
+        if request.user.is_authenticated() and not request.COOKIES.get('username'):
+            response.set_cookie("username", request.user.username)
+        elif not request.user.is_authenticated() and request.COOKIES.get('username'):
+            response.delete_cookie("username")
+
+        return response
+

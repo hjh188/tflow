@@ -32,6 +32,9 @@ class LuConf(object):
     # sql_injection_map = {'sql_func':"select * from a"}
     sql_injection_map = {}
 
+    # sql_param_delimiter <string>: default, ','
+    sql_param_delimiter = ','
+
     # For POST and UPDATE operation with multiple key/value pairs in body
     # Default, lucommon will join the value with the specified delimiter
     # and save the join value into database. User could disable this behavior

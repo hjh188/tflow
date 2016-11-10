@@ -23,6 +23,7 @@
     <!--page level css -->
     {% block page_level_css %}{% endblock %}
     <!--end of page level css-->
+    {% csrf_token %}
 
 </head>
 
@@ -234,7 +235,7 @@
             <section class="sidebar ">
                 <div class="page-sidebar  sidebar-nav">
                     <div class="nav_icons">
-                        <ul class="sidebar_threeicons">
+                        <ul class="sidebar_threeicons" id="sidebar_menu_top">
                             {% for item in sidebar_menu_top %}
                                 {{ item | safe }}
                             {% endfor %}
@@ -268,6 +269,7 @@
     </a>
     <!-- global js -->
     <script src="{{ static_file_endpoint }}js/jquery-1.11.3.min.js" type="text/javascript"></script>
+    <script src="{{ static_file_endpoint }}vendors/form_builder1/js/jquery.ui.min.js" type="text/javascript"></script>
     <script src="{{ static_file_endpoint }}js/bootstrap.min.js" type="text/javascript"></script>
     <!--livicons-->
     <script src="{{ static_file_endpoint }}vendors/livicons/minified/raphael-min.js" type="text/javascript"></script>
@@ -275,6 +277,8 @@
    <script src="{{ static_file_endpoint }}js/josh.js" type="text/javascript"></script>
     <script src="{{ static_file_endpoint }}js/metisMenu.js" type="text/javascript"> </script>
     <script src="{{ static_file_endpoint }}vendors/holder/holder.js" type="text/javascript"></script>
+    <script src="{{ static_file_endpoint }}js/tcommon.js" type="text/javascript"></script>
+    <script src="{{ static_file_endpoint }}js/tflow.js" type="text/javascript"></script>
     <!-- end of global js -->
 
     <!-- begining of page level js -->

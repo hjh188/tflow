@@ -2,6 +2,7 @@
 
 import re
 import importlib
+import json
 
 from operator import itemgetter
 
@@ -389,7 +390,14 @@ class LuModelViewSet(viewsets.ModelViewSet,
 
         if sql:
             sql_param = request.data.get(settings.SQL_PARAM, [])
-            sql_param = [item.strip() for item in sql_param.split(',')] if sql_param else sql_param
+            sql_param = [item for item in sql_param.split(self.conf.sql_param_delimiter)] if sql_param else sql_param
+
+            # For the list item
+            sql_param = map(lambda x: request.data.getlist(x) if x.endswith('[]') else request.data.get(x), sql_param)
+
+            # Convert json data if need, this would workable for type like mysql json field
+            sql_param = map(lambda x: json.dumps(x) if isinstance(x, dict) or isinstance(x, list) else x, sql_param)
+
             allow_sql = self.conf.sql_injection_allow
             map_sql = self.conf.sql_injection_map
 

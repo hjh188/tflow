@@ -44,6 +44,9 @@ class LuSQL(object):
         except Exception, err:
             raise LuSQLSyntaxError(str(err))
 
+        if not self._sql.upper().startswith('SELECT'):
+            return []
+
         fetchall = self._cursor.fetchall()
 
         col_names = [desc[0] for desc in self._cursor.description]

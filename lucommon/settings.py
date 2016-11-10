@@ -34,7 +34,8 @@ MIDDLEWARE_CLASSES += ('django_logging.middleware.DjangoLoggingMiddleware',
                        'corsheaders.middleware.CorsMiddleware',
                        'lucommon.middleware.response.LuResponseFormatMiddleware',
                        'lucommon.middleware.request.LuRequireLoginMiddleware',
-                       'lucommon.middleware.profiler.ProfileMiddleware',)
+                       'lucommon.middleware.profiler.ProfileMiddleware',
+                       'lucommon.middleware.response.LuUserCookie')
 
 # DISABLE_CSRF_CHECK need to be set before import lucommon in project settings
 DISABLE_CSRF_CHECK = False if not hasattr(settings, 'DISABLE_CSRF_CHECK') else settings.DISABLE_CSRF_CHECK
