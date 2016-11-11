@@ -23,6 +23,7 @@ INSTALLED_APPS += ('django_logging',
                    'rest_framework_extensions',
                    'reversion',
                    'reversion_compare',
+                   'django_mysql',
                    'lucommon')
 
 # For reversion

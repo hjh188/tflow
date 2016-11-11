@@ -27,6 +27,9 @@ class UserSerializer(serializers.LuModelSerializer):
     """
     User Serializer
     """
+    sidebar_menu_top = serializers.JSONField()
+    sidebar_menu_bottom = serializers.JSONField()
+
     class Meta:
         model = User
         fields = '__all__'

@@ -59,13 +59,13 @@ def load_menu(view, request):
     # Load user self menu setting if has or load the default
     menu = LuSQL(UserConf.db, 'get_menu', [request.user.username], UserConf.sql_injection_allow, UserConf.sql_injection_map).execute()
 
-    user_sidebar_menu_top_tag = json.loads(menu[0]['sidebar_menu_top']) if menu[0]['sidebar_menu_top'] else view.conf.default_sidebar_menu_top
+    user_sidebar_menu_top_tag = json.loads(menu[0]['sidebar_menu_top']) if menu[0]['sidebar_menu_top'] and menu[0]['sidebar_menu_top'] != '{}' else view.conf.default_sidebar_menu_top
     user_sidebar_menu_top = []
 
     for item in user_sidebar_menu_top_tag:
         user_sidebar_menu_top.append(view.conf.sidebar_menu_top_map[item])
 
-    user_sidebar_menu_bottom_tag = json.loads(menu[0]['sidebar_menu_bottom']) if menu[0]['sidebar_menu_bottom'] else view.conf.default_sidebar_menu_bottom
+    user_sidebar_menu_bottom_tag = json.loads(menu[0]['sidebar_menu_bottom']) if menu[0]['sidebar_menu_bottom'] and menu[0]['sidebar_menu_bottom'] != '{}' else view.conf.default_sidebar_menu_bottom
     user_sidebar_menu_bottom = []
 
     for item in user_sidebar_menu_bottom_tag:

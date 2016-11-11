@@ -132,4 +132,7 @@ CACHES = {
 }
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 
+SILENCED_SYSTEM_CHECKS = [
+    'django_mysql.W003',
+]
 
