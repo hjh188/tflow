@@ -115,4 +115,10 @@ class {{ model_name }}ViewSet(viewsets.LuModelViewSet):
         """
         return super({{ model_name }}ViewSet, self).destroy(request, *args, **kwargs)
 
+    def history(self, request, *args, **kwargs):
+        """
+        Object History
+        """
+        return super({{ model_name }}ViewSet, self).history(request, *args, **kwargs)
+
 {% endfor %}

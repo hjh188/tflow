@@ -28,3 +28,4 @@ django-reversion==1.10.0
 django-reversion-compare==0.6.2
 django-mysql==1.1.0
 mysqlclient==1.3.9
+jsondiff==1.0.0

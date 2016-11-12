@@ -115,4 +115,10 @@ class UserViewSet(viewsets.LuModelViewSet):
         """
         return super(UserViewSet, self).destroy(request, *args, **kwargs)
 
+    def history(self, request, *args, **kwargs):
+        """
+        Object History
+        """
+        return super(UserViewSet, self).history(request, *args, **kwargs)
+
 

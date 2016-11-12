@@ -21,6 +21,7 @@ urlpatterns = [{% for model_name in model_names %}
                                                       'put': 'update',
                                                       'patch': 'partial_update',
                                                       'delete': 'destroy'})),
+    url(r'^{{ model_name|lower }}s/(?P<pk>[0-9]+)/history$', {{ model_name }}ViewSet.as_view({'get':'history'}),
 {% endfor %}
 ]
 

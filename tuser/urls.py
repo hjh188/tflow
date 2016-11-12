@@ -21,6 +21,7 @@ urlpatterns = [
                                                       'put': 'update',
                                                       'patch': 'partial_update',
                                                       'delete': 'destroy'})),
+    url(r'^users/(?P<pk>[0-9]+)/history', UserViewSet.as_view({'get':'history'})),
 
 ]
 

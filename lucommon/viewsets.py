@@ -44,6 +44,10 @@ from lucommon.confs import DummyLuConf
 
 from reversion import revisions
 
+from django.contrib import admin
+from django.shortcuts import get_object_or_404
+from jsondiff import diff
+
 """
 Lu common viewsets
 """
@@ -498,6 +502,86 @@ class LuModelViewSet(viewsets.ModelViewSet,
                 revisions.set_comment("[DELETE] Called from Lucommon Framework")
 
             return resp
+
+    def history(self, request, *args, **kwargs):
+        """
+        Get Object history
+        """
+        model = self.serializer_class.Meta.model
+        admin_manager = admin.site._registry[model]
+
+        object_id = kwargs.get('pk')
+
+        # Check the response format
+        _format = 'json'
+        if request.query_params.get('format') == 'html':
+            _format = 'html'
+
+        # Get the object
+        obj = get_object_or_404(admin_manager.model.objects.using(self.conf.db).all(), pk=object_id)
+        queryset = admin_manager.revision_manager.get_for_object(obj)
+
+        # Get the versions
+        versions = []
+
+        if request.query_params.get('version_id1') and request.query_params.get('version_id2'):
+            version_id1 = request.query_params.get('version_id1')
+            version_id2 = request.query_params.get('version_id2')
+
+            if version_id1 > version_id2:
+                # Compare always the newest one (#2) with the older one (#1)
+                version_id1, version_id2 = version_id2, version_id1
+
+            version1 = get_object_or_404(queryset, pk=version_id1)
+            version2 = get_object_or_404(queryset, pk=version_id2)
+
+            versions.append(version2)
+            versions.append(version1)
+        else:
+            # Get all version for the object
+            versions = admin_manager.revision_manager.get_for_object_reference(model,object_id).order_by('-pk')
+
+        # Response data
+        data = []
+
+        if len(versions) <= 1:
+            return LuResponse(data=data)
+
+        # Compare the diff
+        for i, version in enumerate(versions):
+            version2 = version
+            version1 = versions[i+1]
+            compare_data, has_unfollowed_fields = admin_manager.compare(obj, version1, version2)
+
+            version_diff = {'updated_by': version2.revision.user.username,
+                            'updated_at': version2.revision.date_created,
+                            'comment': version2.revision.comment, 'diff':[]}
+
+            if _format == 'html':
+                # For the data in html part
+                for item in compare_data:
+                    version_diff['diff'].append({'field':item['field'].name, 'diff':item['diff']})
+            else:
+                # For the data in json part
+                version1_data = json.loads(version1.serialized_data)[0]['fields']
+                version2_data = json.loads(version2.serialized_data)[0]['fields']
+
+                version_diff['diff'] = diff(version1_data, version2_data, syntax='explicit', dump=True)
+
+                # Append the version original data
+                version_diff['before'] = {}
+                version_diff['after'] = {}
+                for action, item in json.loads(version_diff['diff']).items():
+                    for key, value in item.items():
+                        version_diff['before'][key] = version1_data[key]
+                        version_diff['after'][key] = version2_data[key]
+
+            data.append(version_diff)
+
+            if i == len(versions) - 2:
+                break
+
+        return LuResponse(data=data)
 
     def get_body_data(self, request):
         """
