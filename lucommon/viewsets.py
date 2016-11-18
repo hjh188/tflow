@@ -517,6 +517,10 @@ class LuModelViewSet(viewsets.ModelViewSet,
         if request.query_params.get('format') == 'html':
             _format = 'html'
 
+        # Check for the limit and offset
+        limit = int(request.query_params.get(settings.LIMIT_FIELD, settings.DEFAULT_LIMIT))
+        offset = int(request.query_params.get(settings.OFFSET_FIELD, 0))
+
         # Get the object
         obj = get_object_or_404(admin_manager.model.objects.using(self.conf.db).all(), pk=object_id)
         queryset = admin_manager.revision_manager.get_for_object(obj)
@@ -539,12 +543,23 @@ class LuModelViewSet(viewsets.ModelViewSet,
             versions.append(version1)
         else:
             # Get all version for the object
-            versions = admin_manager.revision_manager.get_for_object_reference(model,object_id).order_by('-pk')
+            if limit == int(settings.UNLIMIT):
+                versions = admin_manager.revision_manager.get_for_object_reference(model,object_id).order_by('-pk')
+            else:
+                versions = admin_manager.revision_manager.get_for_object_reference(model,object_id).order_by('-pk')[offset:offset + limit + 1]
 
         # Response data
         data = []
 
-        if len(versions) <= 1:
+        if len(versions) == 0:
+            return LuResponse(data=data)
+
+        # For the first versions, show the original data
+        if len(versions) == 1:
+            data.append({'updated_by': versions[0].revision.user.username,
+                         'updated_at': versions[0].revision.date_created,
+                         'comment': versions[0].revision.comment,
+                         'diff': json.loads(versions[0].serialized_data)[0]['fields']})
             return LuResponse(data=data)
 
         # Compare the diff
