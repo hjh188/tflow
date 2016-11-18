@@ -155,6 +155,7 @@ LOGIN_REQUIRED_URLS_EXCEPTIONS = [
 # For SQL injection
 SQL_TEXT = 'lu_sql'
 SQL_PARAM = 'lu_sql_param'
+SQL_SEARCH_CONDITION = 'lu_sql_search_condition'
 
 REST_FRAMEWORK_EXTENSIONS = {
     'DEFAULT_CACHE_KEY_FUNC':

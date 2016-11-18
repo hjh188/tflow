@@ -17,11 +17,12 @@ class LuSQL(object):
     """
     Raw SQL Interface, efficient for multiple table SQL
     """
-    def __init__(self, db, sql, sql_param=[], allow_sql=['SELECT'], map_sql={}):
+    def __init__(self, db, sql, sql_param=[], allow_sql=['SELECT'], map_sql={},
+                       search_condition='', conf_sql={}):
         self._db = db
         self._sql = sql
         self._sql_param = sql_param
-        self.__filter_sql(allow_sql, map_sql)
+        self.__filter_sql(allow_sql, map_sql, search_condition, conf_sql)
         self._conn = connections[self._db]
         self._cursor = self._conn.cursor()
 
@@ -63,7 +64,18 @@ class LuSQL(object):
 
         return data
 
-    def __filter_sql(self, allow_sql, map_sql):
+    def __convert_sql(self, search_condition, conf_sql):
+        """
+        SQL runtime replacement and convertion
+        """
+        self._sql = self._sql.replace('LU_SEARCH_CONDITION', search_condition)
+
+        if search_condition:
+            #TODO: smart analyzer and replacement
+            for key, value in conf_sql.items():
+                self._sql = self._sql.replace(key, value[0])
+
+    def __filter_sql(self, allow_sql, map_sql, search_condition, conf_sql):
         """
         SQL filter is a security policy from lucommon,
         Allow and Deny policy here
@@ -73,6 +85,10 @@ class LuSQL(object):
         """
         # Do the sql mapping
         self._sql = map_sql.get(self._sql, self._sql)
+
+        # Do the replacement and convertion
+        # This will be specially important to lucommon SQL injection powerful
+        self.__convert_sql(search_condition, conf_sql)
 
         # Do the sql filtering
         for sql in allow_sql:

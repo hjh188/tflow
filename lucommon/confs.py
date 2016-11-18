@@ -35,6 +35,13 @@ class LuConf(object):
     # sql_param_delimiter <string>: default, ','
     sql_param_delimiter = ','
 
+    # sql_injection_conf <dict>, will define configuration for search replacement,
+    # coming soon, we will define useful global variable here
+    sql_injection_conf = {'today': ['str(datetime.date.today())', str],
+                          'currentUser': ['self.request.user.username', str],
+                         }
+
+
     # For POST and UPDATE operation with multiple key/value pairs in body
     # Default, lucommon will join the value with the specified delimiter
     # and save the join value into database. User could disable this behavior

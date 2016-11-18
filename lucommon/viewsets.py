@@ -3,6 +3,8 @@
 import re
 import importlib
 import json
+import copy
+import datetime
 
 from operator import itemgetter
 
@@ -40,7 +42,7 @@ from lucommon.utils import (
 
 from lucommon.sql import LuSQL
 
-from lucommon.confs import DummyLuConf
+from lucommon.confs import LuConf, DummyLuConf
 
 from reversion import revisions
 
@@ -397,7 +399,7 @@ class LuModelViewSet(viewsets.ModelViewSet,
             sql_param = [item for item in sql_param.split(self.conf.sql_param_delimiter)] if sql_param else sql_param
 
             # For the list item
-            sql_param = map(lambda x: request.data.getlist(x) if x.endswith('[]') else request.data.get(x), sql_param)
+            sql_param = map(lambda x: request.data.getlist(x) if x.endswith('[]') else request.data.get(x, x), sql_param)
 
             # Convert json data if need, this would workable for type like mysql json field
             sql_param = map(lambda x: json.dumps(x) if isinstance(x, dict) or isinstance(x, list) else x, sql_param)
@@ -405,7 +407,19 @@ class LuModelViewSet(viewsets.ModelViewSet,
             allow_sql = self.conf.sql_injection_allow
             map_sql = self.conf.sql_injection_map
 
-            data = LuSQL(self.queryset._db, sql, sql_param, allow_sql, map_sql).execute()
+            search_condition = request.data.get(settings.SQL_SEARCH_CONDITION, '')
+
+            conf_sql = copy.deepcopy(LuConf.sql_injection_conf)
+            conf_sql.update(self.conf.sql_injection_conf)
+
+            # Process for the runtime configuration
+            for key, value in conf_sql.items():
+                try:
+                    conf_sql[key] = [eval(value[0]),value[1]]
+                except Exception, err:
+                    lu_logger.warn(str(err))
+
+            data = LuSQL(self.queryset._db, sql, sql_param, allow_sql, map_sql, search_condition, conf_sql).execute()
 
             return LuResponse(data=data)
 
