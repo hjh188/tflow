@@ -4,6 +4,7 @@ Do the raw SQL injection execution
 
 import re
 import pyparsing
+import datetime
 
 from django.db import connections
 
@@ -70,11 +71,25 @@ class LuSQL(object):
         """
         SQL runtime replacement and convertion
         """
-        def find(src, obj):
+        def find(src, obj, conf):
             tmp = src.strip('\"')
             tmp = tmp.strip('\'')
-            if obj == tmp:
-                return True
+
+            if conf.mode in ('fixed', 'runtime'):
+                if obj == tmp:
+                    return True
+            elif conf.mode in ('changed'):
+                try:
+                    res = re.findall(obj, tmp)
+                except Exception, err:
+                    lu_logger.error(str(err))
+                    res = None
+
+                if res:
+                    conf.value = eval(conf.value % tuple(res))
+                    conf.key = tmp
+                    return True
+
             return False
 
         if search_condition:
@@ -96,11 +111,11 @@ class LuSQL(object):
                         for key, conf in conf_sql.items():
                             if conf.type == 'value':
                                 for i, item in enumerate(cond[3:-1]):
-                                    if find(item, key):
+                                    if find(item, key, conf):
                                         cond[3+i] = item.replace(key, conf.value)
                                         break
                             elif conf.type == 'key':
-                                if find(cond[0], key):
+                                if find(cond[0], key, conf):
                                     cond[0] = cond[0].replace(key, conf.value)
                                     break
                         # assemble the cond
@@ -109,11 +124,14 @@ class LuSQL(object):
                         # something like this: [u'username', '=', u"'test'"]
                         for key, conf in conf_sql.items():
                             if conf.type == 'value':
-                                if find(cond[2], key):
-                                    cond[2] = cond[2].replace(key, conf.value)
+                                if find(cond[2], key, conf):
+                                    if conf.key:
+                                        cond[2] = cond[2].replace(conf.key, conf.value)
+                                    else:
+                                        cond[2] = cond[2].replace(key, conf.value)
                                     break
                             elif conf.type == 'key':
-                                if find(cond[0], key):
+                                if find(cond[0], key, conf):
                                     cond[0] = cond[0].replace(key, conf.value)
                                     break
                         # assemble the cond
@@ -123,6 +141,7 @@ class LuSQL(object):
                 lu_logger.error(str(err))
             finally:
                 self._sql = self._sql.replace('LU_SEARCH_CONDITION', search_condition)
+                lu_logger.info(self._sql)
 
     def __filter_sql(self, allow_sql, map_sql, search_condition, conf_sql):
         """

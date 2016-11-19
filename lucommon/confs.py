@@ -20,10 +20,12 @@ class LuSQLConf(object):
           - fixed: never change, eg: version = 1
           - changed: execute in the runtime, also eval the value according to client input, like -1d, -2d, 3d
     """
-    def __init__(self, value, type = 'value', mode = 'runtime'):
+    def __init__(self, value, type = 'value', mode = 'fixed'):
         self.value = value
         self.type = type
         self.mode = mode
+        # key used for the mode = 'changed'
+        self.key = None
 
 class LuConf(object):
     # db for model to connect
@@ -54,8 +56,10 @@ class LuConf(object):
 
     # sql_injection_conf <dict>, will define configuration for search replacement,
     # coming soon, we will define useful global variable here
-    sql_injection_conf = {'today': LuSQLConf('str(datetime.date.today())'),
-                          'currentUser': LuSQLConf('self.request.user.username'),
+    sql_injection_conf = {'today': LuSQLConf('str(datetime.date.today())', mode='runtime'),
+                          'currentUser': LuSQLConf('self.request.user.username', mode='runtime'),
+                          '-(\d+)d': LuSQLConf('str(datetime.date.today() + datetime.timedelta(days = int(-%s)))', mode='changed'),
+                          '\+(\d+)d': LuSQLConf('str(datetime.date.today() + datetime.timedelta(days = int(%s)))', mode='changed'),
                          }
 
 
