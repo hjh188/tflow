@@ -28,3 +28,4 @@ webservices==0.6
 django-mysql==1.1.0
 mysqlclient==1.3.9
 jsondiff==1.0.0
+pyparsing=2.1.10

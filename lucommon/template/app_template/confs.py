@@ -6,7 +6,10 @@ it's easy to maintain and good catch.
 
 """
 
-from lucommon.confs import LuConf
+from lucommon.confs import (
+    LuConf,
+    LuSQLConf,
+)
 
 {% for model_name in model_names %}
 class {{ model_name }}Conf(LuConf):

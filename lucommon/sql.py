@@ -3,6 +3,7 @@ Do the raw SQL injection execution
 """
 
 import re
+import pyparsing
 
 from django.db import connections
 
@@ -12,6 +13,7 @@ from lucommon.exception import (
     LuSQLSyntaxError,
 )
 
+from lucommon.simpleSQL import simpleSEARCH
 
 class LuSQL(object):
     """
@@ -68,12 +70,59 @@ class LuSQL(object):
         """
         SQL runtime replacement and convertion
         """
-        self._sql = self._sql.replace('LU_SEARCH_CONDITION', search_condition)
+        def find(src, obj):
+            tmp = src.strip('\"')
+            tmp = tmp.strip('\'')
+            if obj == tmp:
+                return True
+            return False
 
         if search_condition:
             #TODO: smart analyzer and replacement
-            for key, value in conf_sql.items():
-                self._sql = self._sql.replace(key, value[0])
+            try:
+                parsed_sql = simpleSEARCH.parseString(search_condition)
+                where = parsed_sql.where
+                order_by = parsed_sql.order_by
+                group_by = parsed_sql.group_by
+
+                output = []
+                for cond in where:
+                    if isinstance(cond, str):
+                        # For operation, skip
+                        output.append(cond)
+                        continue
+                    if cond[1] in ('not in', 'in'):
+                        # something like this: [u'id', 'in', '(', u'1', u'2', u'3', ')']
+                        for key, conf in conf_sql.items():
+                            if conf.type == 'value':
+                                for i, item in enumerate(cond[3:-1]):
+                                    if find(item, key):
+                                        cond[3+i] = item.replace(key, conf.value)
+                                        break
+                            elif conf.type == 'key':
+                                if find(cond[0], key):
+                                    cond[0] = cond[0].replace(key, conf.value)
+                                    break
+                        # assemble the cond
+                        output.append(' '.join(cond[0:3] + [','.join(cond[3:-1]), cond[-1]]))
+                    else:
+                        # something like this: [u'username', '=', u"'test'"]
+                        for key, conf in conf_sql.items():
+                            if conf.type == 'value':
+                                if find(cond[2], key):
+                                    cond[2] = cond[2].replace(key, conf.value)
+                                    break
+                            elif conf.type == 'key':
+                                if find(cond[0], key):
+                                    cond[0] = cond[0].replace(key, conf.value)
+                                    break
+                        # assemble the cond
+                        output.append(' '.join(cond))
+                search_condition = ' '.join(output)
+            except Exception, err:
+                lu_logger.error(str(err))
+            finally:
+                self._sql = self._sql.replace('LU_SEARCH_CONDITION', search_condition)
 
     def __filter_sql(self, allow_sql, map_sql, search_condition, conf_sql):
         """

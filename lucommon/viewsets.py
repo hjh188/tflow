@@ -410,12 +410,13 @@ class LuModelViewSet(viewsets.ModelViewSet,
             search_condition = request.data.get(settings.SQL_SEARCH_CONDITION, '')
 
             conf_sql = copy.deepcopy(LuConf.sql_injection_conf)
-            conf_sql.update(self.conf.sql_injection_conf)
+            conf_sql.update(copy.deepcopy(self.conf.sql_injection_conf))
 
             # Process for the runtime configuration
-            for key, value in conf_sql.items():
+            for key, conf in conf_sql.items():
                 try:
-                    conf_sql[key] = [eval(value[0]),value[1]]
+                    if conf.mode == 'runtime':
+                        conf.value = eval(conf.value)
                 except Exception, err:
                     lu_logger.warn(str(err))
 

@@ -8,6 +8,23 @@ lucommon
 More flexible to control and enhance lucommon
 """
 
+class LuSQLConf(object):
+    """
+    value: the replacement value
+    type: replacement type, control replace the key or value.
+          eg: a = b, a is the key, b is the value, if type is 'value'
+          will replace the b.
+    mode: mode use to extend LuSQLConf, default is runtime, there are other
+          value: fixed, changed.
+          - runtime: execute in the backend, without change according to client input, eg: currentUser: self.request.user.username
+          - fixed: never change, eg: version = 1
+          - changed: execute in the runtime, also eval the value according to client input, like -1d, -2d, 3d
+    """
+    def __init__(self, value, type = 'value', mode = 'runtime'):
+        self.value = value
+        self.type = type
+        self.mode = mode
+
 class LuConf(object):
     # db for model to connect
     db = 'default'
@@ -37,8 +54,8 @@ class LuConf(object):
 
     # sql_injection_conf <dict>, will define configuration for search replacement,
     # coming soon, we will define useful global variable here
-    sql_injection_conf = {'today': ['str(datetime.date.today())', str],
-                          'currentUser': ['self.request.user.username', str],
+    sql_injection_conf = {'today': LuSQLConf('str(datetime.date.today())'),
+                          'currentUser': LuSQLConf('self.request.user.username'),
                          }
 
 

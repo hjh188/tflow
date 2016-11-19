@@ -6,7 +6,10 @@ it's easy to maintain and good catch.
 
 """
 
-from lucommon.confs import LuConf
+from lucommon.confs import (
+    LuConf,
+    LuSQLConf,
+)
 
 
 class UserConf(LuConf):
@@ -19,6 +22,6 @@ class UserConf(LuConf):
 
     sql_injection_allow = ['SELECT','UPDATE']
     sql_injection_map = {'get_menu':'select sidebar_menu_top, sidebar_menu_bottom from tuser_user where username = %s',
-                         'get_menu2':'select sidebar_menu_top, sidebar_menu_bottom from tuser_user where LU_SEARCH_CONDITION',
+                         'get_user':'select * from tuser_user where LU_SEARCH_CONDITION',
                          'set_menu':"""update tuser_user set sidebar_menu_top = %s, sidebar_menu_bottom = %s where username = %s"""}
 
