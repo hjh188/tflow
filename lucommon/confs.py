@@ -14,17 +14,23 @@ class LuSQLConf(object):
     type: replacement type, control replace the key or value.
           eg: a = b, a is the key, b is the value, if type is 'value'
           will replace the b.
-    mode: mode use to extend LuSQLConf, default is runtime, there are other
-          value: fixed, changed.
+    mode: mode use to extend LuSQLConf, default is fixed, there are other
+          value: runtime, changed.
           - runtime: execute in the backend, without change according to client input, eg: currentUser: self.request.user.username
           - fixed: never change, eg: version = 1
           - changed: execute in the runtime, also eval the value according to client input, like -1d, -2d, 3d
     """
-    def __init__(self, value, type = 'value', mode = 'fixed'):
+    TYPE_VALUE = 'value'
+    TYPE_KEY = 'key'
+
+    MODE_FIXED = 'fixed'
+    MODE_RUNTIME = 'runtime'
+    MODE_CHANGED = 'changed'
+    def __init__(self, value, type = TYPE_VALUE, mode = MODE_FIXED):
         self.value = value
         self.type = type
         self.mode = mode
-        # key used for the mode = 'changed'
+        # key used for the MODE_CHANGED
         self.key = None
 
 class LuConf(object):
@@ -56,10 +62,10 @@ class LuConf(object):
 
     # sql_injection_conf <dict>, will define configuration for search replacement,
     # coming soon, we will define useful global variable here
-    sql_injection_conf = {'today': LuSQLConf('str(datetime.date.today())', mode='runtime'),
-                          'currentUser': LuSQLConf('self.request.user.username', mode='runtime'),
-                          '-(\d+)d': LuSQLConf('str(datetime.date.today() + datetime.timedelta(days = int(-%s)))', mode='changed'),
-                          '\+(\d+)d': LuSQLConf('str(datetime.date.today() + datetime.timedelta(days = int(%s)))', mode='changed'),
+    sql_injection_conf = {'today': LuSQLConf('sql_func.get_today()', mode=LuSQLConf.MODE_RUNTIME),
+                          'currentUser': LuSQLConf('sql_func.get_current_user(self)', mode=LuSQLConf.MODE_RUNTIME),
+                          '-(\d+)d': LuSQLConf('sql_func.get_day_before(%s)', mode=LuSQLConf.MODE_CHANGED),
+                          '\+(\d+)d': LuSQLConf('sql_func.get_day_after(%s)', mode=LuSQLConf.MODE_CHANGED),
                          }
 
 

@@ -4,7 +4,6 @@ Do the raw SQL injection execution
 
 import re
 import pyparsing
-import datetime
 
 from django.db import connections
 
@@ -14,7 +13,10 @@ from lucommon.exception import (
     LuSQLSyntaxError,
 )
 
+from lucommon.confs import LuSQLConf
 from lucommon.simpleSQL import simpleSEARCH
+
+from lucommon import sql_func
 
 class LuSQL(object):
     """
@@ -75,10 +77,10 @@ class LuSQL(object):
             tmp = src.strip('\"')
             tmp = tmp.strip('\'')
 
-            if conf.mode in ('fixed', 'runtime'):
+            if conf.mode in (LuSQLConf.MODE_FIXED, LuSQLConf.MODE_RUNTIME):
                 if obj == tmp:
                     return True
-            elif conf.mode in ('changed'):
+            elif conf.mode in (LuSQLConf.MODE_CHANGED):
                 try:
                     res = re.findall(obj, tmp)
                 except Exception, err:
@@ -86,7 +88,7 @@ class LuSQL(object):
                     res = None
 
                 if res:
-                    conf.value = eval(conf.value % tuple(res))
+                    conf.value = eval(conf.value % res[0])
                     conf.key = tmp
                     return True
 
@@ -109,12 +111,15 @@ class LuSQL(object):
                     if cond[1] in ('not in', 'in'):
                         # something like this: [u'id', 'in', '(', u'1', u'2', u'3', ')']
                         for key, conf in conf_sql.items():
-                            if conf.type == 'value':
+                            if conf.type == LuSQLConf.TYPE_VALUE:
                                 for i, item in enumerate(cond[3:-1]):
                                     if find(item, key, conf):
-                                        cond[3+i] = item.replace(key, conf.value)
+                                        if conf.key:
+                                            cond[3+i] = item.replace(conf.key, conf.value)
+                                        else:
+                                            cond[3+i] = item.replace(key, conf.value)
                                         break
-                            elif conf.type == 'key':
+                            elif conf.type == LuSQLConf.TYPE_KEY:
                                 if find(cond[0], key, conf):
                                     cond[0] = cond[0].replace(key, conf.value)
                                     break
@@ -123,14 +128,14 @@ class LuSQL(object):
                     else:
                         # something like this: [u'username', '=', u"'test'"]
                         for key, conf in conf_sql.items():
-                            if conf.type == 'value':
+                            if conf.type == LuSQLConf.TYPE_VALUE:
                                 if find(cond[2], key, conf):
                                     if conf.key:
                                         cond[2] = cond[2].replace(conf.key, conf.value)
                                     else:
                                         cond[2] = cond[2].replace(key, conf.value)
                                     break
-                            elif conf.type == 'key':
+                            elif conf.type == LuSQLConf.TYPE_KEY:
                                 if find(cond[0], key, conf):
                                     cond[0] = cond[0].replace(key, conf.value)
                                     break
