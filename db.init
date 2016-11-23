@@ -31,3 +31,7 @@ mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql -u root -p mysql
 ALTER TABLE tuser_user ADD COLUMN sidebar_menu_top JSON;
 ALTER TABLE tuser_user ADD COLUMN sidebar_menu_bottom JSON;
 
+# init tproject app
+python manage.py makemigrations --name=tproject
+python manage.py migrate
+

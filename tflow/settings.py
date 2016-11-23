@@ -39,6 +39,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'tuser',
     'tweb',
+    'tproject',
 )
 
 MIDDLEWARE_CLASSES = (
