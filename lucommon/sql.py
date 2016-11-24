@@ -170,6 +170,17 @@ class LuSQL(object):
                                     break
                         # assemble the cond
                         output.append(' '.join(cond))
+
+                # Process order by
+                if order_by:
+                    order_item = []
+
+                    for item in order_by[1:]:
+                        order_item.append(' '.join(item))
+
+                    output.append(order_by[0] + ' ' + ','.join(order_item))
+
+                # Build the search condition
                 search_condition = ' '.join(output)
             except Exception, err:
                 lu_logger.error(str(err))
@@ -193,7 +204,7 @@ class LuSQL(object):
         self.__convert_sql(search_condition, conf_sql)
 
         # For limit and offset
-        if str(self._limit) != settings.UNLIMIT:
+        if str(self._limit) != settings.UNLIMIT and self._sql.upper().startswith('SELECT'):
             self._sql += ' LIMIT %d OFFSET %d' % (int(self._limit), int(self._offset))
 
         # Do the sql filtering

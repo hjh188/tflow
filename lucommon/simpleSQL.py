@@ -52,6 +52,10 @@ intNum = Combine( Optional(arithSign) + Word( nums ) +
 
 asc_desc = oneOf("asc desc", caseless=True)
 
+ordercolumn = columnName + Optional(asc_desc)
+
+ordercolumnList = delimitedList(Group(ordercolumn))
+
 columnRval = realNum | intNum | quotedString | columnName # need to add support for alg expressions
 whereCondition = Group(
                        ( columnName + binop + columnRval ) |
@@ -67,16 +71,16 @@ whereExpression << whereCondition + ZeroOrMore( ( and_ | or_ ) + whereExpression
 selectStmt <<= (SELECT + ('*' | columnNameList)("columns") +
                 FROM + tableNameList( "tables" ) +
                 Optional(Group(WHERE + whereExpression), "")("where") +
-                Optional(GROUP_BY + columnName)("group by") +
+                Optional(GROUP_BY + columnNameList)("group_by") +
                 Optional(HAVING + whereExpression)("having") +
-                Optional(ORDER_BY + columnName + asc_desc)("order by") +
+                Optional(ORDER_BY + ordercolumnList)("order_by") +
                 Optional(LIMIT + intNum)("limit") +
                 Optional(OFFSET + intNum)("offset"))
 
 searchStmt <<= (Group(whereExpression)("where") +
-                Optional(GROUP_BY + columnName)("group by") +
+                Optional(GROUP_BY + columnNameList)("group_by") +
                 Optional(HAVING + whereExpression)("having") +
-                Optional(ORDER_BY + columnName + asc_desc)("order by"))
+                Optional(ORDER_BY + ordercolumnList)("order_by"))
 
 simpleSQL = selectStmt
 
