@@ -42,7 +42,11 @@ from lucommon.utils import (
 
 from lucommon.sql import LuSQL
 
-from lucommon.confs import LuConf, DummyLuConf
+from lucommon.confs import (
+    LuConf,
+    DummyLuConf,
+    LuSQLConf,
+)
 
 from reversion import revisions
 
@@ -163,6 +167,44 @@ class LuModelViewSet(viewsets.ModelViewSet,
         if self.conf.enable_perm_list_check:
             return LuResponse(status=403, code=4003, message='Not Allow For `list` action!')
 
+        # Check if do SQL injection first
+        # Let GET method also support like POST
+        sql = request.query_params.get(settings.SQL_TEXT, '')
+        search_condition = request.query_params.get(settings.SQL_SEARCH_CONDITION, '')
+
+        if sql or search_condition:
+            sql_param = request.query_params.get(settings.SQL_PARAM, [])
+            sql_param = [item for item in sql_param.split(self.conf.sql_param_delimiter)] if sql_param else sql_param
+
+            # For the list item
+            sql_param = map(lambda x: request.query_params.getlist(x) if x.endswith('[]') else request.query_params.get(x, x), sql_param)
+
+            # Convert json data if need, this would workable for type like mysql json field
+            sql_param = map(lambda x: json.dumps(x) if isinstance(x, dict) or isinstance(x, list) else x, sql_param)
+
+            allow_sql = self.conf.sql_injection_allow
+            map_sql = self.conf.sql_injection_map
+
+            conf_sql = copy.deepcopy(LuConf.sql_injection_conf)
+            conf_sql.update(copy.deepcopy(self.conf.sql_injection_conf))
+
+            # Process for the runtime configuration
+            for key, conf in conf_sql.items():
+                try:
+                    if conf.mode == LuSQLConf.MODE_RUNTIME:
+                        conf.value = eval(conf.value)
+                except Exception, err:
+                    lu_logger.warn(str(err))
+
+            # Use the default sql if no sql specify
+            sql = sql if sql else 'get_%s' % self.model.lower()
+
+            data = LuSQL(self.queryset._db, sql, sql_param, allow_sql, map_sql, search_condition, conf_sql).execute()
+
+            return LuResponse(data=data)
+
+
+        # do ORM
         # Common process: response field, check if need to do in database level
         response_field = request.query_params.get(settings.RESPONSE_FIELD,'')
         queryset = self.queryset
@@ -393,8 +435,9 @@ class LuModelViewSet(viewsets.ModelViewSet,
 
         # Check if do SQL injection first
         sql = request.data.get(settings.SQL_TEXT, '')
+        search_condition = request.data.get(settings.SQL_SEARCH_CONDITION, '')
 
-        if sql:
+        if sql or search_condition:
             sql_param = request.data.get(settings.SQL_PARAM, [])
             sql_param = [item for item in sql_param.split(self.conf.sql_param_delimiter)] if sql_param else sql_param
 
@@ -407,18 +450,19 @@ class LuModelViewSet(viewsets.ModelViewSet,
             allow_sql = self.conf.sql_injection_allow
             map_sql = self.conf.sql_injection_map
 
-            search_condition = request.data.get(settings.SQL_SEARCH_CONDITION, '')
-
             conf_sql = copy.deepcopy(LuConf.sql_injection_conf)
             conf_sql.update(copy.deepcopy(self.conf.sql_injection_conf))
 
             # Process for the runtime configuration
             for key, conf in conf_sql.items():
                 try:
-                    if conf.mode == 'runtime':
+                    if conf.mode == LuSQLConf.MODE_RUNTIME:
                         conf.value = eval(conf.value)
                 except Exception, err:
                     lu_logger.warn(str(err))
+
+            # Use the default sql if no sql specify
+            sql = sql if sql else 'get_%s' % self.model.lower()
 
             data = LuSQL(self.queryset._db, sql, sql_param, allow_sql, map_sql, search_condition, conf_sql).execute()
 
