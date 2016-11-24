@@ -10,6 +10,6 @@ class {{ model_name }}Conf(LuConf):
     db = 'default'
 
     # Generate the default SEARCH for the model by lu SQL injection
-    sql_injection_map = {'get_{{ model_name | lower }}':'SELECT * FROM {{ app_name }}_{{ model_name | lower }} WHERE LU_SEARCH_CONDITION'}
+    sql_injection_map = {'get_{{ model_name | lower }}':'SELECT LU_RESPONSE_FIELD FROM {{ app_name }}_{{ model_name | lower }} WHERE LU_SEARCH_CONDITION'}
 
 {% endfor %}

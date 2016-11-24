@@ -16,6 +16,7 @@ from lucommon.exception import (
 
 from lucommon.confs import LuSQLConf
 from lucommon.simpleSQL import (
+    simpleSELECT,
     simpleSEARCH,
 )
 
@@ -27,13 +28,14 @@ class LuSQL(object):
     """
     def __init__(self, db, sql, sql_param=[], allow_sql=['SELECT'], map_sql={},
                        search_condition='', conf_sql={},
-                       limit=settings.DEFAULT_LIMIT, offset=0):
+                       limit=settings.DEFAULT_LIMIT, offset=0,
+                       response_field=None):
         self._db = db
         self._sql = sql
         self._sql_param = sql_param
         self._limit = limit
         self._offset = offset
-        self.__filter_sql(allow_sql, map_sql, search_condition, conf_sql)
+        self.__filter_sql(allow_sql, map_sql, search_condition, conf_sql, response_field)
         self._conn = connections[self._db]
         self._cursor = self._conn.cursor()
 
@@ -98,7 +100,7 @@ class LuSQL(object):
 
         return data
 
-    def __convert_sql(self, search_condition, conf_sql):
+    def __convert_sql(self, search_condition, conf_sql, response_field):
         """
         SQL runtime replacement and convertion
         """
@@ -122,6 +124,17 @@ class LuSQL(object):
                     return True
 
             return False
+
+        if response_field:
+            try:
+                # TODO: smart analyzer and replacement
+                pass
+            except Exception, err:
+                lu_logger.error(str(err))
+            finally:
+                self._sql = self._sql.replace('LU_RESPONSE_FIELD', response_field)
+        else:
+            self._sql = self._sql.replace('LU_RESPONSE_FIELD', '*')
 
         if search_condition:
             #TODO: smart analyzer and replacement
@@ -187,8 +200,10 @@ class LuSQL(object):
             finally:
                 self._sql = self._sql.replace('LU_SEARCH_CONDITION', search_condition)
                 lu_logger.info(self._sql)
+        else:
+            self._sql = self._sql.replace('LU_SEARCH_CONDITION', '1=1')
 
-    def __filter_sql(self, allow_sql, map_sql, search_condition, conf_sql):
+    def __filter_sql(self, allow_sql, map_sql, search_condition, conf_sql, response_field):
         """
         SQL filter is a security policy from lucommon,
         Allow and Deny policy here
@@ -201,7 +216,7 @@ class LuSQL(object):
 
         # Do the replacement and convertion
         # This will be specially important to lucommon SQL injection powerful
-        self.__convert_sql(search_condition, conf_sql)
+        self.__convert_sql(search_condition, conf_sql, response_field)
 
         # For limit and offset
         if str(self._limit) != settings.UNLIMIT and self._sql.upper().startswith('SELECT'):

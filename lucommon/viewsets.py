@@ -192,6 +192,9 @@ class LuModelViewSet(viewsets.ModelViewSet,
             limit = int(request.query_params.get(settings.LIMIT_FIELD, settings.DEFAULT_LIMIT))
             offset = int(request.query_params.get(settings.OFFSET_FIELD, 0))
 
+            # Process response field
+            response_field = request.query_params.get(settings.RESPONSE_FIELD, None)
+
             # Process for the runtime configuration
             for key, conf in conf_sql.items():
                 try:
@@ -204,7 +207,7 @@ class LuModelViewSet(viewsets.ModelViewSet,
             sql = sql if sql else 'get_%s' % self.model.lower()
 
             data = LuSQL(self.queryset._db, sql, sql_param, allow_sql, map_sql,
-                         search_condition, conf_sql, limit, offset).execute()
+                         search_condition, conf_sql, limit, offset, response_field).execute()
 
             count = data.pop(-1) if data else None
 
@@ -468,6 +471,9 @@ class LuModelViewSet(viewsets.ModelViewSet,
             limit = int(request.data.get(settings.LIMIT_FIELD, settings.DEFAULT_LIMIT))
             offset = int(request.data.get(settings.OFFSET_FIELD, 0))
 
+            # Process response field
+            response_field = request.data.get(settings.RESPONSE_FIELD, None)
+
             # Process for the runtime configuration
             for key, conf in conf_sql.items():
                 try:
@@ -480,7 +486,7 @@ class LuModelViewSet(viewsets.ModelViewSet,
             sql = sql if sql else 'get_%s' % self.model.lower()
 
             data = LuSQL(self.queryset._db, sql, sql_param, allow_sql, map_sql,
-                         search_condition, conf_sql, limit, offset).execute()
+                         search_condition, conf_sql, limit, offset, response_field).execute()
 
             count = data.pop(-1) if data else None
 

@@ -1,4 +1,4 @@
-# simpleSQL.py
+# simpleSELECT.py
 #
 # simple demo of using the parsing library to do simple-minded SQL parsing
 # could be extended to include where clauses etc.
@@ -82,16 +82,16 @@ searchStmt <<= (Group(whereExpression)("where") +
                 Optional(HAVING + whereExpression)("having") +
                 Optional(ORDER_BY + ordercolumnList)("order_by"))
 
-simpleSQL = selectStmt
+simpleSELECT = selectStmt
 
 simpleSEARCH = searchStmt
 
 # define Oracle comment format, and ignore them
 oracleSqlComment = "--" + restOfLine
-simpleSQL.ignore( oracleSqlComment )
+simpleSELECT.ignore( oracleSqlComment )
 
 if __name__ == "__main__":
-    simpleSQL.runTests("""\
+    simpleSELECT.runTests("""\
         
         # multiple tables
         SELECT * from XYZZY, ABC
