@@ -5,6 +5,7 @@ Do the raw SQL injection execution
 import re
 import pyparsing
 
+from django.conf import settings
 from django.db import connections
 
 from lucommon.logger import lu_logger
@@ -14,7 +15,9 @@ from lucommon.exception import (
 )
 
 from lucommon.confs import LuSQLConf
-from lucommon.simpleSQL import simpleSEARCH
+from lucommon.simpleSQL import (
+    simpleSEARCH,
+)
 
 from lucommon import sql_func
 
@@ -23,10 +26,13 @@ class LuSQL(object):
     Raw SQL Interface, efficient for multiple table SQL
     """
     def __init__(self, db, sql, sql_param=[], allow_sql=['SELECT'], map_sql={},
-                       search_condition='', conf_sql={}):
+                       search_condition='', conf_sql={},
+                       limit=settings.DEFAULT_LIMIT, offset=0):
         self._db = db
         self._sql = sql
         self._sql_param = sql_param
+        self._limit = limit
+        self._offset = offset
         self.__filter_sql(allow_sql, map_sql, search_condition, conf_sql)
         self._conn = connections[self._db]
         self._cursor = self._conn.cursor()
@@ -43,6 +49,8 @@ class LuSQL(object):
         Raw SQL execution
         """
         try:
+            lu_logger.info(self._sql)
+
             if self._sql_param:
                 self._cursor.execute(self._sql, self._sql_param)
             else:
@@ -66,6 +74,27 @@ class LuSQL(object):
                 dic[col_names[index]] = value
 
             data.append(dic)
+
+        try:
+            pattern = re.compile(r'SELECT (.*?) FROM', re.IGNORECASE)
+            count_sql = pattern.sub('SELECT count(*) FROM', self._sql)
+
+            pattern = re.compile(r' limit (\d+) offset (\d+)', re.IGNORECASE)
+            count_sql = pattern.sub('', count_sql)
+
+            lu_logger.info(count_sql)
+
+            if self._sql_param:
+                self._cursor.execute(count_sql, self._sql_param)
+            else:
+                self._cursor.execute(count_sql)
+        except Exception, err:
+            raise LuSQLSyntaxError(str(err))
+
+        count = self._cursor.fetchall()[0][0]
+
+        # To compatible the previous version, push the count at the last element
+        data.append(count)
 
         return data
 
@@ -162,6 +191,10 @@ class LuSQL(object):
         # Do the replacement and convertion
         # This will be specially important to lucommon SQL injection powerful
         self.__convert_sql(search_condition, conf_sql)
+
+        # For limit and offset
+        if str(self._limit) != settings.UNLIMIT:
+            self._sql += ' LIMIT %d OFFSET %d' % (int(self._limit), int(self._offset))
 
         # Do the sql filtering
         for sql in allow_sql:

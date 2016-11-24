@@ -188,6 +188,10 @@ class LuModelViewSet(viewsets.ModelViewSet,
             conf_sql = copy.deepcopy(LuConf.sql_injection_conf)
             conf_sql.update(copy.deepcopy(self.conf.sql_injection_conf))
 
+            # Process limit and offset
+            limit = int(request.query_params.get(settings.LIMIT_FIELD, settings.DEFAULT_LIMIT))
+            offset = int(request.query_params.get(settings.OFFSET_FIELD, 0))
+
             # Process for the runtime configuration
             for key, conf in conf_sql.items():
                 try:
@@ -199,9 +203,16 @@ class LuModelViewSet(viewsets.ModelViewSet,
             # Use the default sql if no sql specify
             sql = sql if sql else 'get_%s' % self.model.lower()
 
-            data = LuSQL(self.queryset._db, sql, sql_param, allow_sql, map_sql, search_condition, conf_sql).execute()
+            data = LuSQL(self.queryset._db, sql, sql_param, allow_sql, map_sql,
+                         search_condition, conf_sql, limit, offset).execute()
 
-            return LuResponse(data=data)
+            count = data.pop(-1) if data else None
+
+            _pagination = {'count': count,
+                          'previous':pagination.get_previous_link(request, limit, offset, count),
+                          'next':pagination.get_next_link(request, limit, offset, count)}
+
+            return LuResponse(data=data, pagination=_pagination)
 
 
         # do ORM
@@ -453,6 +464,10 @@ class LuModelViewSet(viewsets.ModelViewSet,
             conf_sql = copy.deepcopy(LuConf.sql_injection_conf)
             conf_sql.update(copy.deepcopy(self.conf.sql_injection_conf))
 
+            # Process limit and offset
+            limit = int(request.data.get(settings.LIMIT_FIELD, settings.DEFAULT_LIMIT))
+            offset = int(request.data.get(settings.OFFSET_FIELD, 0))
+
             # Process for the runtime configuration
             for key, conf in conf_sql.items():
                 try:
@@ -464,9 +479,16 @@ class LuModelViewSet(viewsets.ModelViewSet,
             # Use the default sql if no sql specify
             sql = sql if sql else 'get_%s' % self.model.lower()
 
-            data = LuSQL(self.queryset._db, sql, sql_param, allow_sql, map_sql, search_condition, conf_sql).execute()
+            data = LuSQL(self.queryset._db, sql, sql_param, allow_sql, map_sql,
+                         search_condition, conf_sql, limit, offset).execute()
 
-            return LuResponse(data=data)
+            count = data.pop(-1) if data else None
+
+            _pagination = {'count': count,
+                          'previous':pagination.get_previous_link(request, limit, offset, count),
+                          'next':pagination.get_next_link(request, limit, offset, count)}
+
+            return LuResponse(data=data, pagination=_pagination)
 
         if self.conf.enable_join_multiple_key_value_pair:
             data = self.get_body_data(request)

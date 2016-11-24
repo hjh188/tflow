@@ -78,6 +78,9 @@ class LuResponseFormatMiddleware(ResponseFormatMiddlewareBase):
             response.data['code'] = response.code if response.code else response.data['code']
             response.data['message'] = response.message if response.message else response.data['message']
 
+            if response.pagination:
+                response.data['pagination'] = response.pagination
+
             return response
 
         # Codec for the code and message
