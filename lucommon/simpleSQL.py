@@ -40,6 +40,10 @@ in_ = Keyword("in", caseless=True)
 # Add not in support
 not_in_ = Keyword("not in", caseless=True)
 
+# Add is and is not support
+is_ = Keyword("is", caseless=True)
+is_not_ = Keyword("is not", caseless=True)
+
 E = CaselessLiteral("E")
 # Add like and regexp support
 binop = oneOf("= != < > >= <= eq ne lt le gt ge like regexp", caseless=True)
@@ -63,6 +67,8 @@ whereCondition = Group(
                        ( columnName + in_ + "(" + selectStmt + ")" ) |
                        ( columnName + not_in_ + "(" + delimitedList( columnRval ) + ")" ) |
                        ( columnName + not_in_ + "(" + selectStmt + ")" ) |
+                       ( columnName + is_not_ + columnRval) |
+                       ( columnName + is_ + columnRval) |
                        ( "(" + whereExpression + ")" )
                        )
 whereExpression << whereCondition + ZeroOrMore( ( and_ | or_ ) + whereExpression )
