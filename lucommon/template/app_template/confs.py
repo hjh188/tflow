@@ -11,6 +11,8 @@ from lucommon.confs import (
     LuSQLConf,
 )
 
+from lucommon import sql_func
+
 {% for model_name in model_names %}
 class {{ model_name }}Conf(LuConf):
     """

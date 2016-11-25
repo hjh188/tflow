@@ -1,5 +1,5 @@
 import datetime
-
+import json
 
 """
 SQL Func will define small utils function used for the LuSQLConf
@@ -29,5 +29,20 @@ def get_day_after(day):
     Get specified day after today
     """
     return str(datetime.date.today() + datetime.timedelta(days = int(day)))
+
+def json_decode(item):
+    """
+    Json decode
+    """
+    try:
+        return json.loads(item)
+    except:
+        return item
+
+def text_secret(item):
+    """
+    Text secret
+    """
+    return "******"
 
 

@@ -35,6 +35,7 @@ class LuSQL(object):
         self._sql_param = sql_param
         self._limit = limit
         self._offset = offset
+        self._conf_sql = conf_sql
         self.__filter_sql(allow_sql, map_sql, search_condition, conf_sql, response_field)
         self._conn = connections[self._db]
         self._cursor = self._conn.cursor()
@@ -69,11 +70,20 @@ class LuSQL(object):
 
         data = []
 
+        # Get LuSQLConf for response field
+        conf_response = {}
+        for key in self._conf_sql:
+            if self._conf_sql[key].type == LuSQLConf.TYPE_RESPONSE:
+                conf_response[self._conf_sql[key].value.split(' ')[-1]] = self._conf_sql[key].response_callback
+
         for row in fetchall:
             dic = {}
 
             for index, value in enumerate(row):
-                dic[col_names[index]] = value
+                if col_names[index] in conf_response:
+                    dic[col_names[index]] = conf_response[col_names[index]](value)
+                else:
+                    dic[col_names[index]] = value
 
             data.append(dic)
 
@@ -128,7 +138,12 @@ class LuSQL(object):
         if response_field:
             try:
                 # TODO: smart analyzer and replacement
-                pass
+                response_fields = [item.strip() for item in response_field.split(settings.RESPONSE_FIELD_DELIMITER)]
+                for i, field in enumerate(response_fields):
+                    for key, conf in conf_sql.items():
+                        if conf.type == LuSQLConf.TYPE_RESPONSE and find(field, key, conf):
+                            response_fields[i] = conf.value
+                response_field = ','.join(response_fields)
             except Exception, err:
                 lu_logger.error(str(err))
             finally:
@@ -198,6 +213,7 @@ class LuSQL(object):
             except Exception, err:
                 lu_logger.error(str(err))
             finally:
+                self._conf_sql = conf_sql
                 self._sql = self._sql.replace('LU_SEARCH_CONDITION', search_condition)
                 lu_logger.info(self._sql)
         else:

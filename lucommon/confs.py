@@ -20,18 +20,26 @@ class LuSQLConf(object):
           - fixed: never change, eg: version = 1
           - changed: execute in the runtime, also eval the value according to client input, like -1d, -2d, 3d
     """
-    TYPE_VALUE = 'value'
-    TYPE_KEY = 'key'
+    TYPE_VALUE = 'where_value'
+    TYPE_KEY = 'where_key'
+    TYPE_RESPONSE = 'response_column'
+    TYPE_ORDER = 'order_column'
 
     MODE_FIXED = 'fixed'
     MODE_RUNTIME = 'runtime'
     MODE_CHANGED = 'changed'
-    def __init__(self, value, type = TYPE_VALUE, mode = MODE_FIXED):
+    def __init__(self, value, type = TYPE_VALUE, mode = MODE_FIXED, response_callback=None):
         self.value = value
         self.type = type
         self.mode = mode
+
+        # Extension
+
         # key used for the MODE_CHANGED
         self.key = None
+
+        # response_callback
+        self.response_callback = response_callback
 
 class LuConf(object):
     # db for model to connect
