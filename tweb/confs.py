@@ -34,7 +34,7 @@ class WebSourceConf(LuConf):
 
     # Sidebar menu bottom part
     sidebar_menu_bottom_map = {
-      'project': '<li id="project"><a href="index"><i class="livicon" data-name="thumbnails-big" data-size="18" data-c="#418BCA" data-hc="#418BCA" data-loop="true"></i><span class="title">项目</span></a></li>',
+      'project': '<li id="project"><a href="project"><i class="livicon" data-name="thumbnails-big" data-size="18" data-c="#418BCA" data-hc="#418BCA" data-loop="true"></i><span class="title">项目</span></a></li>',
       'requirement': '<li id="requirement"><a href="#"><i class="livicon" data-name="thumbnails-small" data-size="18" data-c="#00bc8c" data-hc="#00bc8c" data-loop="true"></i><span class="title">需求</span><span class="fa arrow"></span></a><ul class="sub-menu"><li><a href="index"><i class="fa fa-angle-double-right"></i>创建</a></li></ul></li>',
       'task': '<li id="task"><a href="index"><i class="livicon" data-c="#EF6F6C" data-hc="#EF6F6C" data-name="list-ul" data-size="18" data-loop="true"></i><span class="title">任务</span></a></li>',
       'testcase': '<li id="testcase"><a href="index"><i class="livicon" data-name="brush" data-c="#F89A14" data-hc="#F89A14" data-size="18" data-loop="true"></i><span class="title">测试用例</span></a></li>',

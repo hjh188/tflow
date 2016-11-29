@@ -181,4 +181,14 @@ class WebSourceViewSet(viewsets.LuModelViewSet):
 
         return render(request, 'index.html', self.conf.base_resp_context)
 
+    def project(self, request, *args, **kwargs):
+        """
+        Project page
+        """
+        menu = load_menu(self, request)
+
+        self.conf.base_resp_context['sidebar_menu_top'] = menu[0]
+        self.conf.base_resp_context['sidebar_menu_bottom'] = menu[1]
+
+        return render(request, 'project.html', self.conf.base_resp_context)
 

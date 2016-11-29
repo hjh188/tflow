@@ -162,6 +162,7 @@ body > .header .navbar .sidebar-toggle {
     line-height: 20px;
     padding-bottom: 0;
     padding-top: 10px;
+    color: #777777;
 }
 
 .left-side li a {
@@ -1282,7 +1283,8 @@ li.dropdown-footer {
 }
 
 .nav .open > a, .nav .open > a:hover, .nav .open > a:focus {
-    background-color: #444;
+    background-color: transparent;
+    color: #d9230f;
 }
 
 .dropdown-menu:after {
