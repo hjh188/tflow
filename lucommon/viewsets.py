@@ -48,8 +48,6 @@ from lucommon.confs import (
     LuSQLConf,
 )
 
-from reversion import revisions
-
 from django.contrib import admin
 from django.shortcuts import get_object_or_404
 from jsondiff import diff
@@ -135,11 +133,11 @@ class LuModelViewSet(viewsets.ModelViewSet,
             if not hasattr(self.conf, 'enable_reversion_post'):
                 setattr(self.conf, 'enable_reversion_post', False)
 
-            if not hasattr(self.conf, 'enable_reversion_update'):
-                setattr(self.conf, 'enable_reversion_update', False)
+            if not hasattr(self.conf, 'enable_reversion_put'):
+                setattr(self.conf, 'enable_reversion_put', False)
 
-            if not hasattr(self.conf, 'enable_reversion_partial_update'):
-                setattr(self.conf, 'enable_reversion_partial_update', False)
+            if not hasattr(self.conf, 'enable_reversion_patch'):
+                setattr(self.conf, 'enable_reversion_patch', False)
 
             if not hasattr(self.conf, 'enable_reversion_delete'):
                 setattr(self.conf, 'enable_reversion_delete', False)
@@ -150,6 +148,9 @@ class LuModelViewSet(viewsets.ModelViewSet,
         """
         Override dispatch
         """
+        # Attach the conf to request
+        request.conf = self.conf
+
         try:
             response = super(LuModelViewSet, self).dispatch(request, *args, **kwargs)
         except Exception, err:
@@ -507,17 +508,7 @@ class LuModelViewSet(viewsets.ModelViewSet,
 
             request = self.set_body_data(request, data)
 
-        if not self.conf.enable_reversion_post:
-            return super(LuModelViewSet, self).create(request, *args, **kwargs)
-        else:
-            with revisions.create_revision():
-                resp = super(LuModelViewSet, self).create(request, *args, **kwargs)
-
-                # Set metadata for reversion
-                revisions.set_user(request.user)
-                revisions.set_comment("[POST] Called from Lucommon Framework")
-
-            return resp
+        return super(LuModelViewSet, self).create(request, *args, **kwargs)
 
     def update(self, request, *args, **kwargs):
         """
@@ -538,17 +529,7 @@ class LuModelViewSet(viewsets.ModelViewSet,
 
             request = self.set_body_data(request, data)
 
-        if not self.conf.enable_reversion_update:
-            return super(LuModelViewSet, self).update(request, *args, **kwargs)
-        else:
-            with revisions.create_revision():
-                resp = super(LuModelViewSet, self).update(request, *args, **kwargs)
-
-                # Set metadata for reversion
-                revisions.set_user(request.user)
-                revisions.set_comment("[UPDATE] Called from Lucommon Framework")
-
-            return resp
+        return super(LuModelViewSet, self).update(request, *args, **kwargs)
 
     def partial_update(self, request, *args, **kwargs):
         """
@@ -558,17 +539,7 @@ class LuModelViewSet(viewsets.ModelViewSet,
             if not request.user.has_perm('%s.change_%s' % (self.app, self.model.lower())):
                 return LuResponse(status=403, code=4003, message="Not Allow For `update` action!")
 
-        if not self.conf.enable_reversion_partial_update:
-            return super(LuModelViewSet, self).partial_update(request, *args, **kwargs)
-        else:
-            with revisions.create_revision():
-                resp = super(LuModelViewSet, self).partial_update(request, *args, **kwargs)
-
-                # Set metadata for reversion
-                revisions.set_user(request.user)
-                revisions.set_comment("[PATCH] Called from Lucommon Framework")
-
-            return resp
+        return super(LuModelViewSet, self).partial_update(request, *args, **kwargs)
 
     def destroy(self, request, *args, **kwargs):
         """
@@ -578,17 +549,7 @@ class LuModelViewSet(viewsets.ModelViewSet,
             if not request.user.has_perm('%s.delete_%s' % (self.app, self.model.lower())):
                 return LuResponse(status=403, code=4003, message="Not Allow For `delete` action!")
 
-        if not self.conf.enable_reversion_delete:
-            return super(LuModelViewSet, self).destroy(request, *args, **kwargs)
-        else:
-            with revisions.create_revision():
-                resp = super(LuModelViewSet, self).destroy(request, *args, **kwargs)
-
-                # Set metadata for reversion
-                revisions.set_user(request.user)
-                revisions.set_comment("[DELETE] Called from Lucommon Framework")
-
-            return resp
+        return super(LuModelViewSet, self).destroy(request, *args, **kwargs)
 
     def history(self, request, *args, **kwargs):
         """

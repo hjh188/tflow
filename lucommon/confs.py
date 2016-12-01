@@ -47,9 +47,9 @@ class LuConf(object):
 
     # for reversion
     enable_reversion_post = False
-    enable_reversion_update = False
-    enable_reversion_partial_update = False
-    enable_reversion_delete = False
+    enable_reversion_put = False
+    enable_reversion_patch = False
+    enable_reversion_delete = True
 
     # sql_injection_allow <list>: only allow 'select' sql injection
     # Actually, user can replace with more, lucommon will match

@@ -11,6 +11,8 @@ from lucommon.confs import (
     LuSQLConf,
 )
 
+from lucommon import sql_func
+
 
 class ComponentConf(LuConf):
     """
@@ -21,7 +23,7 @@ class ComponentConf(LuConf):
     db = 'default'
 
     # Generate the default SEARCH for the model by lu SQL injection
-    sql_injection_map = {'get_component':'SELECT * FROM tproject_component WHERE LU_SEARCH_CONDITION'}
+    sql_injection_map = {'get_component':'SELECT LU_RESPONSE_FIELD FROM tproject_component WHERE LU_SEARCH_CONDITION'}
 
 
 class ProjectConf(LuConf):
@@ -33,7 +35,7 @@ class ProjectConf(LuConf):
     db = 'default'
 
     # Generate the default SEARCH for the model by lu SQL injection
-    sql_injection_map = {'get_project':'SELECT * FROM tproject_project WHERE LU_SEARCH_CONDITION'}
+    sql_injection_map = {'get_project':'SELECT LU_RESPONSE_FIELD FROM tproject_project WHERE LU_SEARCH_CONDITION'}
 
 
 class RequirementTypeConf(LuConf):
@@ -45,6 +47,6 @@ class RequirementTypeConf(LuConf):
     db = 'default'
 
     # Generate the default SEARCH for the model by lu SQL injection
-    sql_injection_map = {'get_requirementtype':'SELECT * FROM tproject_requirementtype WHERE LU_SEARCH_CONDITION'}
+    sql_injection_map = {'get_requirementtype':'SELECT LU_RESPONSE_FIELD FROM tproject_requirementtype WHERE LU_SEARCH_CONDITION'}
 
 

@@ -1,7 +1,8 @@
 from django.db import models
+from lucommon.models import LuModel
 
 
-class Project(models.Model):
+class Project(LuModel):
     """
     Project model
     """
@@ -15,7 +16,7 @@ class Project(models.Model):
     team_id = models.IntegerField(null=True)
 
 
-class RequirementType(models.Model):
+class RequirementType(LuModel):
     """
     Requirement type model
     project <-> requirement type => 1-n
@@ -25,7 +26,7 @@ class RequirementType(models.Model):
     description = models.TextField(null=True)
 
 
-class Component(models.Model):
+class Component(LuModel):
     """
     Component model
     project <-> component => 1-n
