@@ -161,7 +161,7 @@ body > .header .navbar .sidebar-toggle {
 .navbar-nav > li > a {
     line-height: 20px;
     padding-bottom: 0;
-    padding-top: 10px;
+    padding-top: 5px;
     color: #777777;
 }
 
@@ -530,7 +530,7 @@ body > .header .logo .icon {
 }
 
 .dropdown-menu > li > a > .glyphicon, .dropdown-menu > li > a > .fa, .dropdown-menu > li > a > .ion {
-    margin-right: 10px;
+    margin-right: 0px;
 }
 
 .dropdown-menu > li > a:hover {

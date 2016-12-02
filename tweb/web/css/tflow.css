@@ -1,0 +1,24 @@
+.modal-header {
+  background: #eeeeee;
+  border-top-left-radius:6px;
+  border-top-right-radius:6px;
+}
+
+.modal-footer {
+  background: #eeeeee;
+  border-bottom-right-radius:6px;
+  border-bottom-left-radius:6px;
+}
+
+.modal-dialog{
+  overflow-y: initial !important
+}
+.modal-body{
+  max-height: calc(100vh - 200px);
+  overflow-y: auto;
+}
+
+span.require {
+  color: #FF6633;
+}
+

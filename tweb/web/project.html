@@ -1,13 +1,8 @@
 {% extends "base.html" %}
 
-{% block title %}Josh Admin Template{% endblock %}
+{% block title %}TFlow Project Page{% endblock %}
 
 {% block page_level_css %}
-    <link href="{{ static_file_endpoint }}vendors/fullcalendar/css/fullcalendar.css" rel="stylesheet" type="text/css" />
-    <link href="{{ static_file_endpoint }}css/pages/calendar_custom.css" rel="stylesheet" type="text/css" />
-    <link rel="stylesheet" media="all" href="{{ static_file_endpoint }}vendors/jvectormap/jquery-jvectormap.css" />
-    <link rel="stylesheet" href="{{ static_file_endpoint }}vendors/animate/animate.min.css">
-    <link rel="stylesheet" href="{{ static_file_endpoint }}css/only_dashboard.css" />
 {% endblock %}
 
 {% block content_header %}
@@ -15,16 +10,18 @@
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">项目<span class="caret"></span></a>
           <ul class="dropdown-menu" role="menu">
-            <li><a href="#">Action</a></li>
-            <li><a href="#">Another action</a></li>
-            <li><a href="#">Something else here</a></li>
+            <li class="dropdown-header"><i><strong>当前项目</strong></i></li>
+            <li><a href="#"><i class="fa fa-fw fa-rub"></i>后台重构</a></li>
             <li class="divider"></li>
-            <li><a href="#">Separated link</a></li>
+            <li class="dropdown-header"><i><strong>最近浏览项目</strong></i></li>
+            <li><a href="#"><i class="fa fa-fw fa-tumblr-square"></i>前端重构</a></li>
+            <li><a href="#"><i class="fa fa-fw fa-twitter"></i>消息中间件</a></li>
+            <li><a href="#"><i class="fa fa-fw fa-skype"></i>文档中心</a></li>
             <li class="divider"></li>
-            <li><a href="#">One more separated link</a></li>
+            <li><a href="#">查看所有项目</a></li>
           </ul>
         </li>
-        <li><a href="#">创建</a></li>
+        <li><a class="button button-pill" data-toggle="modal" data-href="#create-project-modal" href="#create-project-modal">创建</a></li>
       </ul>
 {% endblock %}
 
@@ -32,38 +29,75 @@
                 <ol class="breadcrumb">
                     <li class="active">
                         <a href="#">
-                            <i class="livicon" data-name="home" data-size="14" data-color="#333" data-hovercolor="#333"></i> Dashboard
+                            <i class="livicon" data-name="home" data-size="14" data-color="#333" data-hovercolor="#333"></i> 项目
                         </a>
                     </li>
                 </ol>
 {% endblock %}
 
 {% block body_content %}
+<div class="modal fade" id="create-project-modal" tabindex="-1" role="dialog" aria-labelledby="projectModalLabel" aria-hidden="true" backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h5 class="modal-title" id="projectModalLabel">
+                    <strong>创建项目</strong>
+                </h5>
+            </div>
+            <div class="modal-body">
+                <form id="create-project-form" action="#" class="form-horizontal">
+                    <div class="form-body">
+                        <div class="form-group pad-top40">
+                            <label for="project-name" class="col-md-3 control-label">
+                                Name
+                                <span class='require'>*</span>
+                            </label>
+                            <div class="col-md-8">
+                                <input id="project-name" type="text" class="form-control" placeholder="项目名" name="name">
+                            </div>
+                        </div>
+                        <div class="form-group pad-top40">
+                            <label for="project-key" class="col-md-3 control-label">
+                                Key
+                                <span class='require'>*</span>
+                            </label>
+                            <div class="col-md-8">
+                                <input id="project-key" type="text" class="form-control" placeholder="需求前缀" name="key">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="project-leader" class="col-md-3 control-label">
+                                Leader
+                                <span class='require'>*</span>
+                            </label>
+                            <div class="col-md-8">
+                                <select id="project-leader" class="selectpicker show-menu-arrow show-tick" data-live-search="true" data-size="5" data-width="auto" name="lead">
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="project-description" class="col-md-3 control-label">Description</label>
+                            <div class="col-md-8">
+                                <textarea id="project-description" rows="5" class="form-control" name="description"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button id="create-project-btn" type="button" class="btn btn-primary">创建</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
 {% endblock %}
 
 {% block page_level_js %}
-    <!--  todolist-->
-    <script src="{{ static_file_endpoint }}js/todolist.js"></script>
-    <!-- EASY PIE CHART JS -->
-    <script src="{{ static_file_endpoint }}vendors/charts/easypiechart.min.js"></script>
-    <script src="{{ static_file_endpoint }}vendors/charts/jquery.easypiechart.min.js"></script>
-    <script src="{{ static_file_endpoint }}vendors/charts/jquery.easingpie.js"></script>
-    <!--for calendar-->
-    <script src="{{ static_file_endpoint }}vendors/fullcalendar/moment.min.js" type="text/javascript"></script>
-    <script src="{{ static_file_endpoint }}vendors/fullcalendar/fullcalendar.min.js" type="text/javascript"></script>
-    <!--   Realtime Server Load  -->
-    <script src="{{ static_file_endpoint }}vendors/charts/jquery.flot.min.js" type="text/javascript"></script>
-    <script src="{{ static_file_endpoint }}vendors/charts/jquery.flot.resize.min.js" type="text/javascript"></script>
-    <!--Sparkline Chart-->
-    <script src="{{ static_file_endpoint }}vendors/charts/jquery.sparkline.js"></script>
-    <!-- Back to Top-->
-    <script type="text/javascript" src="{{ static_file_endpoint }}vendors/countUp/countUp.js"></script>
-    <!--   maps -->
-    <script src="{{ static_file_endpoint }}vendors/jvectormap/jquery-jvectormap-1.2.2.min.js"></script>
-    <script src="{{ static_file_endpoint }}vendors/jvectormap/jquery-jvectormap-world-mill-en.js"></script>
-    <script src="{{ static_file_endpoint }}vendors/jscharts/Chart.js"></script>
-    <script src="{{ static_file_endpoint }}js/dashboard.js" type="text/javascript"></script>
-    <!-- end of page level js -->
+    <script src="{{ static_file_endpoint }}js/project.js" type="text/javascript"></script>
 {% endblock %}
 
 
