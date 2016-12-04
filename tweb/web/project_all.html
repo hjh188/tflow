@@ -1,0 +1,45 @@
+{% extends "project_base.html" %}
+
+{% block title %}List All Project{% endblock %}
+
+{% block project_page_level_css %}
+    <link href="{{ static_file_endpoint }}vendors/datatables/css/dataTables.bootstrap.min.css" rel="stylesheet" type="text/css">
+    <link href="{{ static_file_endpoint }}vendors/datatables/extensions/Responsive/css/responsive.bootstrap.min.css" rel="stylesheet" type="text/css">
+	<link href="{{ static_file_endpoint }}css/pages/tables.css" rel="stylesheet" type="text/css" />
+{% endblock %}
+
+{% block project_body_content %}
+            <section class="content">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="portlet box default">
+                            <div class="portlet-title">
+                                <div class="caption">
+                                    <i class="livicon" data-name="pencil" data-size="16" data-loop="true" data-c="#fff" data-hc="white"></i>
+                                    项目列表
+                                </div>
+                            </div>
+                            <div class="portlet-body">
+                                    <table class="table" id="project_all_table">
+                                        <thead>
+                                            <tr>
+                                                <th>Project</th>
+                                                <th>Key</th>
+                                                <th>Project Lead</th>
+                                                <th>URL</th>
+                                            </tr>
+                                        </thead>
+                                    </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+{% endblock %}
+
+{% block project_page_level_js %}
+    <script src="{{ static_file_endpoint }}vendors/datatables/js/jquery.dataTables.min.js"></script>
+    <script src="{{ static_file_endpoint }}vendors/datatables/js/dataTables.bootstrap.min.js"></script>
+    <script src="{{ static_file_endpoint }}vendors/datatables/extensions/Responsive/js/dataTables.responsive.min.js"></script>
+    <script src="{{ static_file_endpoint }}js/project_all.js"></script>
+{% endblock %}
+

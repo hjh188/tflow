@@ -181,7 +181,7 @@ class WebSourceViewSet(viewsets.LuModelViewSet):
 
         return render(request, 'index.html', self.conf.base_resp_context)
 
-    def project(self, request, *args, **kwargs):
+    def project_dashboard(self, request, *args, **kwargs):
         """
         Project page
         """
@@ -190,5 +190,16 @@ class WebSourceViewSet(viewsets.LuModelViewSet):
         self.conf.base_resp_context['sidebar_menu_top'] = menu[0]
         self.conf.base_resp_context['sidebar_menu_bottom'] = menu[1]
 
-        return render(request, 'project.html', self.conf.base_resp_context)
+        return render(request, 'project_dashboard.html', self.conf.base_resp_context)
+
+    def project_all(self, request, *args, **kwargs):
+        """
+        List all project page
+        """
+        menu = load_menu(self, request)
+
+        self.conf.base_resp_context['sidebar_menu_top'] = menu[0]
+        self.conf.base_resp_context['sidebar_menu_bottom'] = menu[1]
+
+        return render(request, 'project_all.html', self.conf.base_resp_context)
 

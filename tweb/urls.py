@@ -23,7 +23,8 @@ urlpatterns = [
                                                       'delete': 'destroy'})),
     url(r'^login', WebSourceViewSet.as_view({'get':'get_login', 'post':'post_login'})),
     url(r'^index', WebSourceViewSet.as_view({'get':'index'})),
-    url(r'^project', WebSourceViewSet.as_view({'get':'project'})),
+    url(r'^project/dashboard', WebSourceViewSet.as_view({'get':'project_dashboard'})),
+    url(r'^project/all', WebSourceViewSet.as_view({'get':'project_all'})),
 
 ]
 

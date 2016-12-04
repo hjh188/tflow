@@ -1,4 +1,8 @@
 $(document).ready(function(){
+    // hide the sidemenu
+    $('.left-side').toggleClass("collapse-left");
+    $(".right-side").toggleClass("strech");
+
     // init the modal
     $('#create-project-modal').modal({
         backdrop: false,

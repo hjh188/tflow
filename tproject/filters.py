@@ -38,7 +38,7 @@ class ProjectFilter(django_filters.FilterSet):
 
     class Meta:
         model = Project
-        fields = ['id', 'name', 'url', 'lead', 'description', 'status', 'create_at', 'max_create_at', 'min_create_at', 'update_at', 'max_update_at', 'min_update_at', 'team_id', 'max_team_id', 'min_team_id']
+        fields = ['id', 'name', 'url', 'lead', 'description', 'status', 'create_at', 'max_create_at', 'min_create_at', 'update_at', 'max_update_at', 'min_update_at', 'team_id', 'max_team_id', 'min_team_id', 'project_key']
 
 
 class RequirementTypeFilter(django_filters.FilterSet):

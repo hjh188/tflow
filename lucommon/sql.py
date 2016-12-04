@@ -29,7 +29,7 @@ class LuSQL(object):
     def __init__(self, db, sql, sql_param=[], allow_sql=['SELECT'], map_sql={},
                        search_condition='', conf_sql={},
                        limit=settings.DEFAULT_LIMIT, offset=0,
-                       response_field=None):
+                       response_field=None, request=None):
         self._db = db
         self._sql = sql
         self._sql_param = sql_param
@@ -39,6 +39,7 @@ class LuSQL(object):
         self.__filter_sql(allow_sql, map_sql, search_condition, conf_sql, response_field)
         self._conn = connections[self._db]
         self._cursor = self._conn.cursor()
+        self._request = request
 
     def __del__(self):
         try:
@@ -76,14 +77,22 @@ class LuSQL(object):
             if self._conf_sql[key].type == LuSQLConf.TYPE_RESPONSE:
                 conf_response[self._conf_sql[key].value.split(' ')[-1]] = self._conf_sql[key].response_callback
 
+        plain_data = True if self._request and 'lu_plain_data' in self._request.query_params else False
+
         for row in fetchall:
-            dic = {}
+            dic = {} if not plain_data else []
 
             for index, value in enumerate(row):
                 if col_names[index] in conf_response:
-                    dic[col_names[index]] = conf_response[col_names[index]](value)
+                    if not plain_data:
+                        dic[col_names[index]] = conf_response[col_names[index]](value)
+                    else:
+                        dic.append(conf_response[col_names[index]](value))
                 else:
-                    dic[col_names[index]] = value
+                    if not plain_data:
+                        dic[col_names[index]] = value
+                    else:
+                        dic.append(value)
 
             data.append(dic)
 

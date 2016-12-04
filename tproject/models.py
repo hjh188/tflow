@@ -9,7 +9,7 @@ class Project(LuModel):
     name = models.CharField(max_length=255, null=False, unique=True)
     url = models.CharField(max_length=255, null=True)
     lead = models.CharField(max_length=255, null=True)
-    key = models.CharField(max_length=255, null=False)
+    project_key = models.CharField(max_length=255, null=False)
     description = models.TextField(null=True)
     status = models.CharField(max_length=255, null=True)
     create_at = models.DateTimeField(auto_now_add=True, null=True)

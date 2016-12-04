@@ -208,7 +208,7 @@ class LuModelViewSet(viewsets.ModelViewSet,
             sql = sql if sql else 'get_%s' % self.model.lower()
 
             data = LuSQL(self.queryset._db, sql, sql_param, allow_sql, map_sql,
-                         search_condition, conf_sql, limit, offset, response_field).execute()
+                         search_condition, conf_sql, limit, offset, response_field, request).execute()
 
             count = data.pop(-1) if data else None
 
@@ -487,7 +487,7 @@ class LuModelViewSet(viewsets.ModelViewSet,
             sql = sql if sql else 'get_%s' % self.model.lower()
 
             data = LuSQL(self.queryset._db, sql, sql_param, allow_sql, map_sql,
-                         search_condition, conf_sql, limit, offset, response_field).execute()
+                         search_condition, conf_sql, limit, offset, response_field, request).execute()
 
             count = data.pop(-1) if data else None
 
